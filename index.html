@@ -1,1 +1,278 @@
 <h1>holiss</h1>
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador Atmosférico</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        
+        h1 {
+            color: #4fc3f7;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        input, select {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #2d2d2d;
+            color: white;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #4fc3f7;
+            color: #121212;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3fb0e6;
+        }
+        
+        .results {
+            margin-top: 20px;
+            background-color: #252525;
+            border-radius: 5px;
+            padding: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .reference {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Buscador Atmosférico</h1>
+        
+        <div class="search-box">
+            <select id="columna">
+                <option value="Altura">Altura</option>
+                <option value="Temperatura">Temperatura</option>
+                <option value="Velocidad del sonido">Velocidad del sonido</option>
+                <option value="Presión relativa">Presión relativa</option>
+                <option value="Densidad relativa">Densidad relativa</option>
+                <option value="Presión">Presión</option>
+                <option value="Densidad">Densidad</option>
+            </select>
+            
+            <input type="number" id="valor" placeholder="Ingresa un número (ej: 500, 15.5)">
+            
+            <button onclick="buscar()">BUSCAR</button>
+        </div>
+        
+        <div id="resultados" class="results">🔍 Ingresa un valor para buscar</div>
+        
+        <div id="interpolar-btn" style="display: none; margin-top: 15px;">
+            <button onclick="interpolar()">CALCULAR INTERPOLACIÓN</button>
+        </div>
+        
+        <div id="interpolacion" class="results" style="display: none;"></div>
+    </div>
+    
+    <div class="reference">
+        Aplicación offline para cálculos atmosféricos | GitHub.io
+    </div>
+
+    <script>
+        // Base de datos completa
+        const datos = [
+            { Altura: 0, Temperatura: 288, "Velocidad del sonido": 340.17, "Presión relativa": 1, "Densidad relativa": 1, Presión: 101325, Densidad: 1.23 },
+            { Altura: 500, Temperatura: 284.75, "Velocidad del sonido": 338.25, "Presión relativa": 0.942159, "Densidad relativa": 0.952912, Presión: 95464.2, Densidad: 1.17 },
+            // Agrega aquí todos tus datos...
+        ];
+        
+        // Variables para interpolación
+        let inferior = null;
+        let superior = null;
+        let valorActual = null;
+        let columnaActual = null;
+        
+        function buscar() {
+            const valor = parseFloat(document.getElementById('valor').value);
+            const columna = document.getElementById('columna').value;
+            const resultadosDiv = document.getElementById('resultados');
+            const interpolarBtn = document.getElementById('interpolar-btn');
+            const interpolacionDiv = document.getElementById('interpolacion');
+            
+            // Resetear
+            interpolarBtn.style.display = 'none';
+            interpolacionDiv.style.display = 'none';
+            
+            if (isNaN(valor)) {
+                resultadosDiv.innerHTML = "❌ Ingresa un número válido";
+                return;
+            }
+            
+            // Buscar coincidencias exactas
+            const encontrados = datos.filter(item => Math.abs(item[columna] - valor) < 0.001);
+            
+            if (encontrados.length > 0) {
+                let html = `<strong>✅ ${encontrados.length} resultado(s) encontrado(s):</strong><br><br>`;
+                html += "<table style='width:100%; border-collapse: collapse;'>";
+                
+                // Cabeceras
+                html += "<tr>";
+                for (const key in encontrados[0]) {
+                    html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+                }
+                html += "</tr>";
+                
+                // Datos
+                encontrados.forEach(item => {
+                    html += "<tr>";
+                    for (const key in item) {
+                        html += `<td style='padding:5px; border-bottom:1px solid #333;'>${item[key]}</td>`;
+                    }
+                    html += "</tr>";
+                });
+                
+                html += "</table>";
+                resultadosDiv.innerHTML = html;
+            } else {
+                // Buscar valores para interpolación
+                const datosOrdenados = [...datos].sort((a, b) => a[columna] - b[columna]);
+                let menores = datosOrdenados.filter(item => item[columna] <= valor);
+                let mayores = datosOrdenados.filter(item => item[columna] >= valor);
+                
+                if (menores.length > 0 && mayores.length > 0) {
+                    inferior = menores[menores.length - 1];
+                    superior = mayores[0];
+                    valorActual = valor;
+                    columnaActual = columna;
+                    
+                    let html = `<strong>⚠️ No hay coincidencia exacta para ${valor} en ${columna}</strong><br><br>`;
+                    html += "<strong>Valores de referencia:</strong><br><br>";
+                    html += "<table style='width:100%; border-collapse: collapse;'>";
+                    
+                    // Cabeceras
+                    html += "<tr>";
+                    for (const key in inferior) {
+                        html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+                    }
+                    html += "</tr>";
+                    
+                    // Datos
+                    html += "<tr style='color:#4fc3f7'>";
+                    for (const key in inferior) {
+                        html += `<td style='padding:5px; border-bottom:1px solid #333;'>${inferior[key]}</td>`;
+                    }
+                    html += "</tr>";
+                    
+                    html += "<tr style='color:#4fc3f7'>";
+                    for (const key in superior) {
+                        html += `<td style='padding:5px;'>${superior[key]}</td>`;
+                    }
+                    html += "</tr>";
+                    
+                    html += "</table>";
+                    resultadosDiv.innerHTML = html;
+                    
+                    // Mostrar botón de interpolación
+                    interpolarBtn.style.display = 'block';
+                } else {
+                    resultadosDiv.innerHTML = "ℹ️ No hay suficientes datos para interpolar";
+                }
+            }
+        }
+        
+        function interpolar() {
+            if (!inferior || !superior) return;
+            
+            const interpolacionDiv = document.getElementById('interpolacion');
+            interpolacionDiv.style.display = 'block';
+            
+            // Función de interpolación lineal
+            function interpolar(valor, x0, x1, y0, y1) {
+                return y0 + (valor - x0) * (y1 - y0) / (x1 - x0);
+            }
+            
+            // Calcular valores interpolados
+            let resultado = {};
+            for (const key in inferior) {
+                if (key === columnaActual) {
+                    resultado[key] = valorActual;
+                } else {
+                    resultado[key] = interpolar(
+                        valorActual,
+                        inferior[columnaActual],
+                        superior[columnaActual],
+                        inferior[key],
+                        superior[key]
+                    );
+                }
+            }
+            
+            // Mostrar resultados
+            let html = "<strong>🎯 Resultado interpolado:</strong><br><br>";
+            html += "<table style='width:100%; border-collapse: collapse;'>";
+            
+            // Cabeceras
+            html += "<tr>";
+            for (const key in resultado) {
+                html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+            }
+            html += "</tr>";
+            
+            // Datos
+            html += "<tr style='color:#4fc3f7'>";
+            for (const key in resultado) {
+                // Formatear números (eliminar decimales innecesarios)
+                let valor = resultado[key];
+                if (Number.isInteger(valor)) {
+                    valor = valor.toFixed(0);
+                } else {
+                    valor = parseFloat(valor.toFixed(5));
+                }
+                html += `<td style='padding:5px;'>${valor}</td>`;
+            }
+            html += "</tr>";
+            
+            html += "</table>";
+            interpolacionDiv.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
