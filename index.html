@@ -374,6 +374,12 @@
             html += "</table>";
             interpolacionDiv.innerHTML = html;
         }
+
+        // Manejador de la tecla Enter
+    document.getElementById('valor').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            realizarBusqueda();
+            
     </script>
 </body>
 </html>
