@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador Atmosférico</title>
 <style>
+    /* Estilos base (los que ya tenías) */
     body {
         background-color: #121212;
         color: #ffffff;
@@ -17,8 +18,6 @@
         flex-direction: column;
         align-items: center;
         min-height: 100vh;
-        opacity: 0;
-        animation: fadeIn 0.5s ease-out forwards;
     }
     
     .container {
@@ -28,15 +27,19 @@
         border-radius: 10px;
         padding: 20px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        transform: translateY(20px);
-        animation: slideUp 0.4s ease-out 0.2s forwards;
     }
     
     h1 {
         color: #4fc3f7;
         text-align: center;
         margin-bottom: 30px;
-        animation: pulse 2s infinite alternate;
+    }
+    
+    .search-box {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 20px;
     }
     
     input, select {
@@ -47,13 +50,6 @@
         color: white;
         font-size: 16px;
         transition: all 0.3s ease;
-    }
-    
-    input:focus, select:focus {
-        outline: none;
-        border-color: #4fc3f7;
-        box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.3);
-        transform: scale(1.02);
     }
     
     button {
@@ -70,35 +66,70 @@
     
     button:hover {
         background-color: #3fb0e6;
-        transform: translateY(-2px);
     }
     
+    /* Animaciones nuevas */
     .results {
         margin-top: 20px;
         background-color: #252525;
         border-radius: 5px;
+        padding: 0; /* Cambiado para la animación */
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.5s ease-out;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    
+    .results.visible {
         padding: 15px;
-        white-space: pre-wrap;
-        font-family: monospace;
-        animation: fadeIn 0.6s ease-out;
+        max-height: 1000px;
+        opacity: 1;
+        transform: translateY(0);
     }
     
-    /* Keyframes para animaciones */
-    @keyframes fadeIn {
-        from { opacity: 0; }
-        to { opacity: 1; }
+    /* Animación del botón al hacer clic */
+    @keyframes buttonClick {
+        0% { transform: scale(1); }
+        50% { transform: scale(0.95); }
+        100% { transform: scale(1); }
     }
     
-    @keyframes slideUp {
-        from { transform: translateY(20px); }
-        to { transform: translateY(0); }
-    }
-    
-    @keyframes pulse {
-        from { text-shadow: 0 0 5px rgba(79, 195, 247, 0.5); }
-        to { text-shadow: 0 0 15px rgba(79, 195, 247, 0.8); }
+    .button-click {
+        animation: buttonClick 0.3s ease;
     }
 </style>
+
+<script>
+    // Función para manejar la búsqueda
+    function realizarBusqueda() {
+        // Animación del botón
+        const btn = document.querySelector('button');
+        btn.classList.add('button-click');
+        setTimeout(() => btn.classList.remove('button-click'), 300);
+        
+        // Tu lógica de búsqueda aquí...
+        // Ejemplo:
+        const valor = document.getElementById('valor').value;
+        const resultados = document.querySelector('.results');
+        
+        // Mostrar resultados con animación
+        setTimeout(() => {
+            resultados.innerHTML = "Resultados de búsqueda..."; // Reemplaza con tus resultados reales
+            resultados.classList.add('visible');
+        }, 300);
+    }
+    
+    // Manejador del botón
+    document.querySelector('button').addEventListener('click', realizarBusqueda);
+    
+    // Manejador de la tecla Enter
+    document.getElementById('valor').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            realizarBusqueda();
+        }
+    });
+</script>
 </head>
 <body>
     <div class="container">
