@@ -1,42 +1,11 @@
+<h1>BUENASSS<h1>
 <!DOCTYPE html>
-<h1>BUENASSS</h1>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador Atmosférico</title>
     <style>
-
-                                                                                /* Animación de entrada */
-                                                                                .aparecer {
-                                                                                  animation: aparecer 1.5s;
-                                                                                }
-                                                                                @keyframes aparecer {
-                                                                                  from { opacity: 0; transform: translateY(20px); }
-                                                                                  to { opacity: 1; transform: translateY(0); }
-                                                                                }
-                                                                                
-                                                                                /* Estilos básicos */
-                                                                                body {
-                                                                                  background: #121212;
-                                                                                  color: white;
-                                                                                  font-family: Arial;
-                                                                                  text-align: center;
-                                                                                  padding: 20px;
-                                                                                }
-                                                                                button {
-                                                                                  background: #4fc3f7;
-                                                                                  border: none;
-                                                                                  padding: 10px 20px;
-                                                                                  border-radius: 5px;
-                                                                                  cursor: pointer;
-                                                                                  transition: transform 1s;
-                                                                                }
-                                                                                button:hover {
-                                                                                  transform: scale(1.1);
-                                                                                }
-  
-
         body {
             background-color: #121212;
             color: #ffffff;
@@ -62,7 +31,7 @@
             color: #4fc3f7;
             text-align: center;
             margin-bottom: 30px;
-            font-size: clamp(20px, 3vw, 28px); /* Mínimo 20px, máximo 28px, adaptable */
+		font-size: clamp(20px, 3vw, 28px); /* Mínimo 20px, máximo 28px, adaptable */
         }
         
         .search-box {
@@ -81,7 +50,7 @@
             font-size: 16px;
         }
         
-   button {
+        button {
             background-color: #4fc3f7;
             color: #121212;
             border: none;
@@ -90,12 +59,9 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            transition: background-color 2s;
-        
+            transition: background-color 0.3s;
         }
-
-    
-                                                    
+        
         button:hover {
             background-color: #3fb0e6;
         }
@@ -110,8 +76,8 @@
         }
         
         .reference {
-            margin-top: 50px;
-            font-size: 11px;
+            margin-top: 30px;
+            font-size: 12px;
             color: #666;
             text-align: center;
         }
@@ -137,7 +103,7 @@
             <button onclick="buscar()">BUSCAR</button>
         </div>
         
-        <div id="resultados" class="results">🔍 Ingresa un valor para buscar en la tabla</div>
+        <div id="resultados" class="results">🔍 Ingresa un valor para buscar</div>
         
         <div id="interpolar-btn" style="display: none; margin-top: 15px;">
             <button onclick="interpolar()">CALCULAR INTERPOLACIÓN</button>
@@ -153,8 +119,8 @@
     <script>
         // Base de datos completa
         const datos = [
- { Altura:	0	   , Temperatura:	288	  , "Velocidad del sonido":	340.17	, "Presión relativa":	1	, "Densidad relativa":	1	, Presión:	101325	, Densidad:	1.23	},
- { Altura:	500	 , Temperatura:	284.75	, "Velocidad del sonido":	338.25	, "Presión relativa":	0.942159	, "Densidad relativa":	0.952912	, Presión:	95464.2	, Densidad:	1.17	},
+             { Altura:	0	, Temperatura:	288	, "Velocidad del sonido":	340.17	, "Presión relativa":	1	, "Densidad relativa":	1	, Presión:	101325	, Densidad:	1.23	},
+ { Altura:	500	, Temperatura:	284.75	, "Velocidad del sonido":	338.25	, "Presión relativa":	0.942159	, "Densidad relativa":	0.952912	, Presión:	95464.2	, Densidad:	1.17	},
  { Altura:	1000	, Temperatura:	281.5	, "Velocidad del sonido":	336.31	, "Presión relativa":	0.887056	, "Densidad relativa":	0.907539	, Presión:	89880.9	, Densidad:	1.11	},
  { Altura:	1500	, Temperatura:	278.25	, "Velocidad del sonido":	334.37	, "Presión relativa":	0.834592	, "Densidad relativa":	0.863836	, Presión:	84565	, Densidad:	1.06	},
  { Altura:	2000	, Temperatura:	275	, "Velocidad del sonido":	332.41	, "Presión relativa":	0.784668	, "Densidad relativa":	0.821762	, Presión:	79506.5	, Densidad:	1.01	},
@@ -254,7 +220,8 @@
  { Altura:	87000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000002	, "Densidad relativa":	0.000003	, Presión:	0.21392	, Densidad:	0.00000413	},
  { Altura:	88000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000002	, "Densidad relativa":	0.000003	, Presión:	0.17708	, Densidad:	0.00000342	},
  { Altura:	89000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.14658	, Densidad:	0.00000283	},
- { Altura:	90000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.12134	, Densidad:	0.00000234	}
+ { Altura:	90000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.12134	, Densidad:	0.00000234	},
+
         ];
         
         // Variables para interpolación
