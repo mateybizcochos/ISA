@@ -82,8 +82,33 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🌍 Buscador Atmosférico</h1>
+   <body 
+       style="
+    margin: 0;
+    padding: 20px;
+    background-color: #121212;
+    color: white;
+    font-family: Arial;
+    min-width: fit-content;  <!-- Clave: el body se ajusta al contenido --> 
+    overflow-x: auto;        <!-- Scroll horizontal si es necesario -->
+    display: inline-block;   <!-- Permite que el body crezca con el contenido -->
+">
+
+    <!-- Contenedor con ancho FIJO (basado en el contenido) -->
+    <div class="container" style="
+        min-width: 600px;    <!-- Ancho mínimo para que la tabla no se rompa -->
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0,0,0,1);
+        margin: 0 auto;      <!-- Centrado en pantallas grandes -->
+    ">
+        <!-- Tu tabla y contenido aquí (se mantendrán ordenados) -->
+        <h1>Buscador Atmosférico</h1>
+        <table style="width: 100%; border-collapse: collapse;">
+            <!-- Tablas como en tu ejemplo -->
+        </table>
+    </div>
         
         <div class="search-box">
             <select id="columna">
