@@ -1,102 +1,155 @@
+<h1>buenasss</h1>
+
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Buscador Atmosférico PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscador Atmosférico</title>
     <style>
         body {
-            background-color: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
             margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
         }
-        .matrix-effect {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1;
-            opacity: 0.15;
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
+        
         h1 {
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0;
+            color: #4fc3f7;
+            text-align: center;
             margin-bottom: 30px;
         }
-        input {
-            background: transparent;
-            border: 2px solid #0f0;
-            color: #0f0;
-            padding: 15px;
-            font-size: 18px;
-            width: 80%;
-            max-width: 400px;
+        
+        .search-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 20px;
-            text-align: center;
         }
-        #resultado {
-            border: 1px dashed #0f0;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 600px;
-            text-align: left;
-            background-color: rgba(0, 15, 0, 0.3);
+        
+        input, select {
+            padding: 12px;
+            border-radius: 5px;
+            border: 1px solid #333;
+            background-color: #2d2d2d;
+            color: white;
+            font-size: 16px;
         }
-        .highlight {
-            color: #ff0;
+        
+        button {
+            background-color: #4fc3f7;
+            color: #121212;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
             font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3fb0e6;
+        }
+        
+        .results {
+            margin-top: 20px;
+            background-color: #252525;
+            border-radius: 5px;
+            padding: 15px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        
+        .reference {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <!-- Efecto Matrix de fondo (opcional) -->
-    <canvas id="matrix" class="matrix-effect"></canvas>
+    <div class="container">
+        <h1>☀️🌦️🌧️Mi atmosfera standard🌨️🌤️⛈️</h1>
+        
+        <div class="search-box">
+            <select id="columna">
+                <option value="Altura">Altura</option>
+                <option value="Temperatura">Temperatura</option>
+                <option value="Velocidad del sonido">Velocidad del sonido</option>
+                <option value="Presión relativa">Presión relativa</option>
+                <option value="Densidad relativa">Densidad relativa</option>
+                <option value="Presión">Presión</option>
+                <option value="Densidad">Densidad</option>
+            </select>
+            
+            <input type="number" id="valor" placeholder="Ingresa un número (ej: 500, 15.5)">
+            
+            <button onclick="buscar()">BUSCAR</button>
+        </div>
+        
+        <div id="resultados" class="results">🔍 Ingresa un valor para buscar</div>
+        
+        <div id="interpolar-btn" style="display: none; margin-top: 15px;">
+            <button onclick="interpolar()">CALCULAR INTERPOLACIÓN</button>
+        </div>
+        
+        <div id="interpolacion" class="results" style="display: none;"></div>
+    </div>
     
-    <h1>⚡ BUSCADOR ATMOSFÉRICO PRO ⚡</h1>
-    
-    <input type="number" id="valor" placeholder="INGRESA TU NÚMERO AQUÍ" 
-           onfocus="this.placeholder=''" 
-           onblur="this.placeholder='INGRESA TU NÚMERO AQUÍ'">
-    
-    <div id="resultado">
-        >> SISTEMA LISTO <<<br>
-        >> INGRESE VALOR PARA INICIAR <<
+    <div class="reference">
+        Aplicación offline para cálculos atmosféricos | GitHub.io
     </div>
 
     <script>
-        // Datos completos (ejemplo extendido)
+        // Base de datos completa
         const datos = [
-             { Altura:	0	, Temperatura:	288	, "Velocidad del sonido":	340.17	, "Presión relativa":	1	, "Densidad relativa":	1	, Presión:	101325	, Densidad:	1.23	},
- { Altura:	500	, Temperatura:	284.75	, "Velocidad del sonido":	338.25	, "Presión relativa":	0.942159	, "Densidad relativa":	0.952912	, Presión:	95464.2	, Densidad:	1.17	},
+ { Altura:	0	    , Temperatura:	288	    , "Velocidad del sonido":	340.17	, "Presión relativa":	1	        , "Densidad relativa":	        1	, Presión:	101325	, Densidad:	1.23	},
+ { Altura:	500	    , Temperatura:	284.75	, "Velocidad del sonido":	338.25	, "Presión relativa":	0.942159	, "Densidad relativa":	0.952912	, Presión:	95464.2	, Densidad:	1.17	},
  { Altura:	1000	, Temperatura:	281.5	, "Velocidad del sonido":	336.31	, "Presión relativa":	0.887056	, "Densidad relativa":	0.907539	, Presión:	89880.9	, Densidad:	1.11	},
  { Altura:	1500	, Temperatura:	278.25	, "Velocidad del sonido":	334.37	, "Presión relativa":	0.834592	, "Densidad relativa":	0.863836	, Presión:	84565	, Densidad:	1.06	},
- { Altura:	2000	, Temperatura:	275	, "Velocidad del sonido":	332.41	, "Presión relativa":	0.784668	, "Densidad relativa":	0.821762	, Presión:	79506.5	, Densidad:	1.01	},
- { Altura:	2500	, Temperatura:	271.75	, "Velocidad del sonido":	330.44	, "Presión relativa":	0.73719	, "Densidad relativa":	0.781272	, Presión:	74695.8	, Densidad:	0.957	},
+ { Altura:	2000	, Temperatura:	275	,     "Velocidad del sonido":	332.41	, "Presión relativa":	0.784668	, "Densidad relativa":	0.821762	, Presión:	79506.5	, Densidad:	1.01	},
+ { Altura:	2500	, Temperatura:	271.75	, "Velocidad del sonido":	330.44	, "Presión relativa":	0.73719	    , "Densidad relativa":	0.781272	, Presión:	74695.8	, Densidad:	0.957	},
  { Altura:	3000	, Temperatura:	268.5	, "Velocidad del sonido":	328.46	, "Presión relativa":	0.692065	, "Densidad relativa":	0.742327	, Presión:	70123.5	, Densidad:	0.909	},
  { Altura:	3500	, Temperatura:	265.25	, "Velocidad del sonido":	326.46	, "Presión relativa":	0.649203	, "Densidad relativa":	0.704884	, Presión:	65780.5	, Densidad:	0.863	},
- { Altura:	4000	, Temperatura:	262	, "Velocidad del sonido":	324.46	, "Presión relativa":	0.608515	, "Densidad relativa":	0.668902	, Presión:	61657.8	, Densidad:	0.819	},
+ { Altura:	4000	, Temperatura:	262	,     "Velocidad del sonido":	324.46	, "Presión relativa":	0.608515	, "Densidad relativa":	0.668902	, Presión:	61657.8	, Densidad:	0.819	},
  { Altura:	4500	, Temperatura:	258.75	, "Velocidad del sonido":	322.44	, "Presión relativa":	0.569917	, "Densidad relativa":	0.634342	, Presión:	57746.8	, Densidad:	0.777	},
  { Altura:	5000	, Temperatura:	255.5	, "Velocidad del sonido":	320.41	, "Presión relativa":	0.533325	, "Densidad relativa":	0.601164	, Presión:	54039.1	, Densidad:	0.736	},
- { Altura:	5500	, Temperatura:	252.25	, "Velocidad del sonido":	318.36	, "Presión relativa":	0.498658	, "Densidad relativa":	0.56933	, Presión:	50526.6	, Densidad:	0.697	},
- { Altura:	6000	, Temperatura:	249	, "Velocidad del sonido":	316.3	, "Presión relativa":	0.465839	, "Densidad relativa":	0.538802	, Presión:	47201.2	, Densidad:	0.66	},
+ { Altura:	5500	, Temperatura:	252.25	, "Velocidad del sonido":	318.36	, "Presión relativa":	0.498658	, "Densidad relativa":	0.56933	    , Presión:	50526.6	, Densidad:	0.697	},
+ { Altura:	6000	, Temperatura:	249	,     "Velocidad del sonido":	316.3	, "Presión relativa":	0.465839	, "Densidad relativa":	0.538802	, Presión:	47201.2	, Densidad:	0.66	},
  { Altura:	6500	, Temperatura:	245.75	, "Velocidad del sonido":	314.23	, "Presión relativa":	0.434791	, "Densidad relativa":	0.509541	, Presión:	44055.2	, Densidad:	0.624	},
- { Altura:	7000	, Temperatura:	242.5	, "Velocidad del sonido":	312.15	, "Presión relativa":	0.40544	, "Densidad relativa":	0.481512	, Presión:	41081.2	, Densidad:	0.59	},
+ { Altura:	7000	, Temperatura:	242.5	, "Velocidad del sonido":	312.15	, "Presión relativa":	0.40544	    , "Densidad relativa":	0.481512	, Presión:	41081.2	, Densidad:	0.59	},
  { Altura:	7500	, Temperatura:	239.25	, "Velocidad del sonido":	310.05	, "Presión relativa":	0.377713	, "Densidad relativa":	0.454677	, Presión:	38271.8	, Densidad:	0.557	},
- { Altura:	8000	, Temperatura:	236	, "Velocidad del sonido":	307.94	, "Presión relativa":	0.351542	, "Densidad relativa":	0.429001	, Presión:	35620	, Densidad:	0.526	},
+ { Altura:	8000	, Temperatura:	236	,     "Velocidad del sonido":	307.94	, "Presión relativa":	0.351542	, "Densidad relativa":	0.429001	, Presión:	35620	, Densidad:	0.526	},
  { Altura:	8500	, Temperatura:	232.75	, "Velocidad del sonido":	305.81	, "Presión relativa":	0.326859	, "Densidad relativa":	0.404448	, Presión:	33119	, Densidad:	0.495	},
  { Altura:	9000	, Temperatura:	229.5	, "Velocidad del sonido":	303.67	, "Presión relativa":	0.303598	, "Densidad relativa":	0.380985	, Presión:	30762	, Densidad:	0.467	},
  { Altura:	9500	, Temperatura:	226.25	, "Velocidad del sonido":	301.51	, "Presión relativa":	0.281695	, "Densidad relativa":	0.358578	, Presión:	28542.8	, Densidad:	0.439	},
- { Altura:	10000	, Temperatura:	223	, "Velocidad del sonido":	299.33	, "Presión relativa":	0.26109	, "Densidad relativa":	0.337192	, Presión:	26454.9	, Densidad:	0.413	},
+ { Altura:	10000	, Temperatura:	223	,     "Velocidad del sonido":	299.33	, "Presión relativa":	0.26109	    , "Densidad relativa":	0.337192	, Presión:	26454.9	, Densidad:	0.413	},
  { Altura:	10500	, Temperatura:	219.75	, "Velocidad del sonido":	297.15	, "Presión relativa":	0.241722	, "Densidad relativa":	0.316796	, Presión:	24492.5	, Densidad:	0.388	},
  { Altura:	11000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.223534	, "Densidad relativa":	0.297357	, Presión:	22649.6	, Densidad:	0.364	},
  { Altura:	12000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.191055	, "Densidad relativa":	0.254151	, Presión:	19358.7	, Densidad:	0.311	},
  { Altura:	13000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.163295	, "Densidad relativa":	0.217224	, Presión:	16545.9	, Densidad:	0.266	},
  { Altura:	14000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.139569	, "Densidad relativa":	0.185662	, Presión:	14141.8	, Densidad:	0.227	},
- { Altura:	15000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.11929	, "Densidad relativa":	0.158686	, Presión:	12087.1	, Densidad:	0.194	},
+ { Altura:	15000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.11929	    , "Densidad relativa":	0.158686	, Presión:	12087.1	, Densidad:	0.194	},
  { Altura:	16000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.101958	, "Densidad relativa":	0.135629	, Presión:	10330.9	, Densidad:	0.166	},
  { Altura:	17000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.087144	, "Densidad relativa":	0.115923	, Presión:	8829.82	, Densidad:	0.142	},
  { Altura:	18000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.074482	, "Densidad relativa":	0.09908	, Presión:	7546.88	, Densidad:	0.121	},
- { Altura:	19000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.06366	, "Densidad relativa":	0.084684	, Presión:	6450.34	, Densidad:	0.104	},
+ { Altura:	19000	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.06366	    , "Densidad relativa":	0.084684	, Presión:	6450.34	, Densidad:	0.104	},
  { Altura:	20100	, Temperatura:	216.5	, "Velocidad del sonido":	294.94	, "Presión relativa":	0.053563	, "Densidad relativa":	0.071252	, Presión:	5427.25	, Densidad:	0.0873	},
  { Altura:	21000	, Temperatura:	217.39	, "Velocidad del sonido":	295.55	, "Presión relativa":	0.046485	, "Densidad relativa":	0.061577	, Presión:	4710.12	, Densidad:	0.0754	},
  { Altura:	22000	, Temperatura:	218.38	, "Velocidad del sonido":	296.22	, "Presión relativa":	0.039743	, "Densidad relativa":	0.052407	, Presión:	4026.92	, Densidad:	0.0642	},
@@ -105,11 +158,11 @@
  { Altura:	25000	, Temperatura:	221.36	, "Velocidad del sonido":	298.23	, "Presión relativa":	0.024941	, "Densidad relativa":	0.032447	, Presión:	2527.18	, Densidad:	0.0397	},
  { Altura:	26000	, Temperatura:	222.35	, "Velocidad del sonido":	298.9	, "Presión relativa":	0.021383	, "Densidad relativa":	0.027694	, Presión:	2166.68	, Densidad:	0.0339	},
  { Altura:	27000	, Temperatura:	223.34	, "Velocidad del sonido":	299.57	, "Presión relativa":	0.018346	, "Densidad relativa":	0.023654	, Presión:	1858.87	, Densidad:	0.029	},
- { Altura:	28000	, Temperatura:	224.33	, "Velocidad del sonido":	300.23	, "Presión relativa":	0.01575	, "Densidad relativa":	0.020218	, Presión:	1595.88	, Densidad:	0.0248	},
+ { Altura:	28000	, Temperatura:	224.33	, "Velocidad del sonido":	300.23	, "Presión relativa":	0.01575	    , "Densidad relativa":	0.020218	, Presión:	1595.88	, Densidad:	0.0248	},
  { Altura:	29000	, Temperatura:	225.33	, "Velocidad del sonido":	300.89	, "Presión relativa":	0.013531	, "Densidad relativa":	0.017293	, Presión:	1371.02	, Densidad:	0.0212	},
  { Altura:	30000	, Temperatura:	226.32	, "Velocidad del sonido":	301.55	, "Presión relativa":	0.011632	, "Densidad relativa":	0.014801	, Presión:	1178.63	, Densidad:	0.0181	},
  { Altura:	31000	, Temperatura:	227.31	, "Velocidad del sonido":	302.21	, "Presión relativa":	0.010006	, "Densidad relativa":	0.012677	, Presión:	1013.9	, Densidad:	0.0155	},
- { Altura:	32200	, Temperatura:	228.5	, "Velocidad del sonido":	303	, "Presión relativa":	0.00836	, "Densidad relativa":	0.010536	, Presión:	847.06	, Densidad:	0.0129	},
+ { Altura:	32200	, Temperatura:	228.5	, "Velocidad del sonido":	303	    , "Presión relativa":	0.00836	    , "Densidad relativa":	0.010536	, Presión:	847.06	, Densidad:	0.0129	},
  { Altura:	33000	, Temperatura:	230.73	, "Velocidad del sonido":	304.48	, "Presión relativa":	0.007422	, "Densidad relativa":	0.009263	, Presión:	752.018	, Densidad:	0.0113	},
  { Altura:	34000	, Temperatura:	233.51	, "Velocidad del sonido":	306.31	, "Presión relativa":	0.006406	, "Densidad relativa":	0.007901	, Presión:	649.113	, Densidad:	0.00968	},
  { Altura:	35000	, Temperatura:	236.29	, "Velocidad del sonido":	308.12	, "Presión relativa":	0.005539	, "Densidad relativa":	0.006751	, Presión:	561.266	, Densidad:	0.00827	},
@@ -122,13 +175,13 @@
  { Altura:	42000	, Temperatura:	255.76	, "Velocidad del sonido":	320.57	, "Presión relativa":	0.002095	, "Densidad relativa":	0.002359	, Presión:	212.269	, Densidad:	0.00289	},
  { Altura:	43000	, Temperatura:	258.54	, "Velocidad del sonido":	322.31	, "Presión relativa":	0.001834	, "Densidad relativa":	0.002043	, Presión:	185.866	, Densidad:	0.0025	},
  { Altura:	44000	, Temperatura:	261.32	, "Velocidad del sonido":	324.04	, "Presión relativa":	0.001608	, "Densidad relativa":	0.001773	, Presión:	162.978	, Densidad:	0.00217	},
- { Altura:	45000	, Temperatura:	264.1	, "Velocidad del sonido":	325.76	, "Presión relativa":	0.001412	, "Densidad relativa":	0.00154	, Presión:	143.108	, Densidad:	0.00189	},
- { Altura:	46000	, Temperatura:	266.88	, "Velocidad del sonido":	327.47	, "Presión relativa":	0.001242	, "Densidad relativa":	0.00134	, Presión:	125.832	, Densidad:	0.00164	},
+ { Altura:	45000	, Temperatura:	264.1	, "Velocidad del sonido":	325.76	, "Presión relativa":	0.001412	, "Densidad relativa":	0.00154	,     Presión:	143.108	, Densidad:	0.00189	},
+ { Altura:	46000	, Temperatura:	266.88	, "Velocidad del sonido":	327.47	, "Presión relativa":	0.001242	, "Densidad relativa":	0.00134	,     Presión:	125.832	, Densidad:	0.00164	},
  { Altura:	47300	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.001053	, "Densidad relativa":	0.001121	, Presión:	106.665	, Densidad:	0.00137	},
  { Altura:	48000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.000964	, "Densidad relativa":	0.001026	, Presión:	97.6597	, Densidad:	0.00126	},
- { Altura:	49000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.00085	, "Densidad relativa":	0.000905	, Presión:	86.0982	, Densidad:	0.00111	},
+ { Altura:	49000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.00085	    ,"Densidad relativa":	0.000905	, Presión:	86.0982	, Densidad:	0.00111	},
  { Altura:	50000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.000749	, "Densidad relativa":	0.000798	, Presión:	75.9053	, Densidad:	0.000977	},
- { Altura:	51000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.00066	, "Densidad relativa":	0.000703	, Presión:	66.9192	, Densidad:	0.000861	},
+ { Altura:	51000	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.00066	    , "Densidad relativa":	0.000703	, Presión:	66.9192	, Densidad:	0.000861	},
  { Altura:	52400	, Temperatura:	270.5	, "Velocidad del sonido":	329.68	, "Presión relativa":	0.000554	, "Densidad relativa":	0.000589	, Presión:	56.0972	, Densidad:	0.000722	},
  { Altura:	53000	, Temperatura:	269.33	, "Velocidad del sonido":	328.96	, "Presión relativa":	0.000513	, "Densidad relativa":	0.000549	, Presión:	51.9975	, Densidad:	0.000672	},
  { Altura:	54000	, Temperatura:	267.37	, "Velocidad del sonido":	327.76	, "Presión relativa":	0.000452	, "Densidad relativa":	0.000487	, Presión:	45.7855	, Densidad:	0.000596	},
@@ -138,27 +191,27 @@
  { Altura:	58000	, Temperatura:	259.54	, "Velocidad del sonido":	322.93	, "Presión relativa":	0.000269	, "Densidad relativa":	0.000299	, Presión:	27.264	, Densidad:	0.000366	},
  { Altura:	59000	, Temperatura:	257.59	, "Velocidad del sonido":	321.71	, "Presión relativa":	0.000236	, "Densidad relativa":	0.000264	, Presión:	23.8916	, Densidad:	0.000323	},
  { Altura:	60000	, Temperatura:	255.63	, "Velocidad del sonido":	320.49	, "Presión relativa":	0.000206	, "Densidad relativa":	0.000233	, Presión:	20.9152	, Densidad:	0.000285	},
- { Altura:	61600	, Temperatura:	252.5	, "Velocidad del sonido":	318.52	, "Presión relativa":	0.000166	, "Densidad relativa":	0.00019	, Presión:	16.8688	, Densidad:	0.000233	},
- { Altura:	62000	, Temperatura:	250.93	, "Velocidad del sonido":	317.53	, "Presión relativa":	0.000166	, "Densidad relativa":	0.00019	, Presión:	16.8688	, Densidad:	0.000233	},
+ { Altura:	61600	, Temperatura:	252.5	, "Velocidad del sonido":	318.52	, "Presión relativa":	0.000166	, "Densidad relativa":	0.00019	,     Presión:	16.8688	, Densidad:	0.000233	},
+ { Altura:	62000	, Temperatura:	250.93	, "Velocidad del sonido":	317.53	, "Presión relativa":	0.000166	, "Densidad relativa":	0.00019	,     Presión:	16.8688	, Densidad:	0.000233	},
  { Altura:	63000	, Temperatura:	247.02	, "Velocidad del sonido":	315.04	, "Presión relativa":	0.000157	, "Densidad relativa":	0.000181	, Presión:	15.9438	, Densidad:	0.000221	},
  { Altura:	64000	, Temperatura:	243.11	, "Velocidad del sonido":	312.54	, "Presión relativa":	0.000136	, "Densidad relativa":	0.000159	, Presión:	13.8255	, Densidad:	0.000195	},
- { Altura:	65000	, Temperatura:	239.2	, "Velocidad del sonido":	310.01	, "Presión relativa":	0.000118	, "Densidad relativa":	0.00014	, Presión:	11.9615	, Densidad:	0.000171	},
+ { Altura:	65000	, Temperatura:	239.2	, "Velocidad del sonido":	310.01	, "Presión relativa":	0.000118	, "Densidad relativa":	0.00014	,     Presión:	11.9615	, Densidad:	0.000171	},
  { Altura:	66000	, Temperatura:	235.28	, "Velocidad del sonido":	307.47	, "Presión relativa":	0.000102	, "Densidad relativa":	0.000123	, Presión:	10.3244	, Densidad:	0.00015	},
  { Altura:	67000	, Temperatura:	231.37	, "Velocidad del sonido":	304.9	, "Presión relativa":	0.000088	, "Densidad relativa":	0.000107	, Presión:	8.88983	, Densidad:	0.000132	},
  { Altura:	68000	, Temperatura:	227.46	, "Velocidad del sonido":	302.31	, "Presión relativa":	0.000075	, "Densidad relativa":	0.000094	, Presión:	7.63539	, Densidad:	0.000115	},
  { Altura:	69000	, Temperatura:	223.54	, "Velocidad del sonido":	299.7	, "Presión relativa":	0.000065	, "Densidad relativa":	0.000082	, Presión:	6.54097	, Densidad:	0.0001	},
  { Altura:	70000	, Temperatura:	219.63	, "Velocidad del sonido":	297.06	, "Presión relativa":	0.000055	, "Densidad relativa":	0.000071	, Presión:	5.5884	, Densidad:	0.000087	},
  { Altura:	71000	, Temperatura:	215.72	, "Velocidad del sonido":	294.41	, "Presión relativa":	0.000047	, "Densidad relativa":	0.000062	, Presión:	4.76129	, Densidad:	0.0000755	},
- { Altura:	72000	, Temperatura:	211.8	, "Velocidad del sonido":	291.72	, "Presión relativa":	0.00004	, "Densidad relativa":	0.000053	, Presión:	4.04494	, Densidad:	0.0000653	},
+ { Altura:	72000	, Temperatura:	211.8	, "Velocidad del sonido":	291.72	, "Presión relativa":	0.00004	,     "Densidad relativa":	0.000053	, Presión:	4.04494	, Densidad:	0.0000653	},
  { Altura:	73000	, Temperatura:	207.89	, "Velocidad del sonido":	289.02	, "Presión relativa":	0.000034	, "Densidad relativa":	0.000046	, Presión:	3.42612	, Densidad:	0.0000563	},
- { Altura:	74000	, Temperatura:	203.98	, "Velocidad del sonido":	286.28	, "Presión relativa":	0.000029	, "Densidad relativa":	0.00004	, Presión:	2.89301	, Densidad:	0.0000484	},
+ { Altura:	74000	, Temperatura:	203.98	, "Velocidad del sonido":	286.28	, "Presión relativa":	0.000029	, "Densidad relativa":	0.00004	,     Presión:	2.89301	, Densidad:	0.0000484	},
  { Altura:	75000	, Temperatura:	200.07	, "Velocidad del sonido":	283.52	, "Presión relativa":	0.000024	, "Densidad relativa":	0.000034	, Presión:	2.435	, Densidad:	0.0000416	},
- { Altura:	76000	, Temperatura:	196.15	, "Velocidad del sonido":	280.74	, "Presión relativa":	0.00002	, "Densidad relativa":	0.000029	, Presión:	2.04268	, Densidad:	0.0000355	},
+ { Altura:	76000	, Temperatura:	196.15	, "Velocidad del sonido":	280.74	, "Presión relativa":	0.00002	,     "Densidad relativa":	0.000029	, Presión:	2.04268	, Densidad:	0.0000355	},
  { Altura:	77000	, Temperatura:	192.24	, "Velocidad del sonido":	277.92	, "Presión relativa":	0.000017	, "Densidad relativa":	0.000025	, Presión:	1.70763	, Densidad:	0.0000303	},
  { Altura:	78000	, Temperatura:	188.33	, "Velocidad del sonido":	275.08	, "Presión relativa":	0.000014	, "Densidad relativa":	0.000021	, Presión:	1.42239	, Densidad:	0.0000258	},
  { Altura:	79000	, Temperatura:	184.41	, "Velocidad del sonido":	272.21	, "Presión relativa":	0.000012	, "Densidad relativa":	0.000018	, Presión:	1.18035	, Densidad:	0.0000218	},
  { Altura:	80000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000008	, "Densidad relativa":	0.000013	, Presión:	0.80319	, Densidad:	0.0000155	},
- { Altura:	81000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000007	, "Densidad relativa":	0.00001	, Presión:	0.66487	, Densidad:	0.0000128	},
+ { Altura:	81000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000007	, "Densidad relativa":	0.00001	,     Presión:	0.66487	, Densidad:	0.0000128	},
  { Altura:	82000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000005	, "Densidad relativa":	0.000009	, Presión:	0.55037	, Densidad:	0.0000106	},
  { Altura:	83000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000004	, "Densidad relativa":	0.000007	, Presión:	0.45559	, Densidad:	0.00000879	},
  { Altura:	84000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000004	, "Densidad relativa":	0.000006	, Presión:	0.37713	, Densidad:	0.00000727	},
@@ -169,76 +222,164 @@
  { Altura:	89000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.14658	, Densidad:	0.00000283	},
  { Altura:	90000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.12134	, Densidad:	0.00000234	},
 
+            // Agrega aquí todos tus datos...
         ];
-
-        // Búsqueda con estilo
-        document.getElementById('valor').addEventListener('input', function(e) {
-            const valor = parseFloat(e.target.value);
-            const resultado = document.getElementById('resultado');
+        
+        // Variables para interpolación
+        let inferior = null;
+        let superior = null;
+        let valorActual = null;
+        let columnaActual = null;
+        
+        function buscar() {
+            const valor = parseFloat(document.getElementById('valor').value);
+            const columna = document.getElementById('columna').value;
+            const resultadosDiv = document.getElementById('resultados');
+            const interpolarBtn = document.getElementById('interpolar-btn');
+            const interpolacionDiv = document.getElementById('interpolacion');
             
-            if (!e.target.value) {
-                resultado.innerHTML = ">> SISTEMA LISTO <<<br>>> INGRESE VALOR PARA INICIAR <<";
-                return;
-            }
+            // Resetear
+            interpolarBtn.style.display = 'none';
+            interpolacionDiv.style.display = 'none';
             
             if (isNaN(valor)) {
-                resultado.innerHTML = ">> ❌ ERROR: ENTRADA NO VÁLIDA <<<br>>> INGRESE SOLO NÚMEROS <<";
+                resultadosDiv.innerHTML = "❌ Ingresa un número válido";
                 return;
             }
             
-            // Búsqueda profesional
-            const exactos = datos.filter(item => item.altura === valor);
-            const cercanos = datos.sort((a, b) => Math.abs(a.altura - valor) - Math.abs(b.altura - valor)).slice(0, 2);
+            // Buscar coincidencias exactas
+            const encontrados = datos.filter(item => Math.abs(item[columna] - valor) < 0.001);
             
-            if (exactos.length > 0) {
-                let html = ">> ✅ RESULTADO EXACTO <<<br><br>";
-                exactos.forEach(item => {
-                    html += `ALTURA: <span class="highlight">${item.altura}</span><br>`;
-                    html += `TEMP: ${item.temp} | VEL: ${item.vel} | PRES: ${item.pres}<br><br>`;
+            if (encontrados.length > 0) {
+                let html = `<strong>✅ ${encontrados.length} resultado(s) encontrado(s):</strong><br><br>`;
+                html += "<table style='width:100%; border-collapse: collapse;'>";
+                
+                // Cabeceras
+                html += "<tr>";
+                for (const key in encontrados[0]) {
+                    html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+                }
+                html += "</tr>";
+                
+                // Datos
+                encontrados.forEach(item => {
+                    html += "<tr>";
+                    for (const key in item) {
+                        html += `<td style='padding:5px; border-bottom:1px solid #333;'>${item[key]}</td>`;
+                    }
+                    html += "</tr>";
                 });
-                resultado.innerHTML = html;
+                
+                html += "</table>";
+                resultadosDiv.innerHTML = html;
             } else {
-                let html = ">> ⚠️ VALOR NO ENCONTRADO <<<br>";
-                html += ">> VALORES CERCANOS DISPONIBLES: <<<br><br>";
+                // Buscar valores para interpolación
+                const datosOrdenados = [...datos].sort((a, b) => a[columna] - b[columna]);
+                let menores = datosOrdenados.filter(item => item[columna] <= valor);
+                let mayores = datosOrdenados.filter(item => item[columna] >= valor);
                 
-                cercanos.forEach(item => {
-                    html += `ALTURA: <span class="highlight">${item.altura}</span><br>`;
-                    html += `TEMP: ${item.temp} | VEL: ${item.vel} | PRES: ${item.pres}<br><br>`;
-                });
-                
-                html += ">> INGRESE OTRO VALOR PARA REFINAR <<";
-                resultado.innerHTML = html;
+                if (menores.length > 0 && mayores.length > 0) {
+                    inferior = menores[menores.length - 1];
+                    superior = mayores[0];
+                    valorActual = valor;
+                    columnaActual = columna;
+                    
+                    let html = `<strong>⚠️ No hay coincidencia exacta para ${valor} en ${columna}</strong><br><br>`;
+                    html += "<strong>Valores de referencia:</strong><br><br>";
+                    html += "<table style='width:100%; border-collapse: collapse;'>";
+                    
+                    // Cabeceras
+                    html += "<tr>";
+                    for (const key in inferior) {
+                        html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+                    }
+                    html += "</tr>";
+                    
+                    // Datos
+                    html += "<tr style='color:#4fc3f7'>";
+                    for (const key in inferior) {
+                        html += `<td style='padding:5px; border-bottom:1px solid #333;'>${inferior[key]}</td>`;
+                    }
+                    html += "</tr>";
+                    
+                    html += "<tr style='color:#4fc3f7'>";
+                    for (const key in superior) {
+                        html += `<td style='padding:5px;'>${superior[key]}</td>`;
+                    }
+                    html += "</tr>";
+                    
+                    html += "</table>";
+                    resultadosDiv.innerHTML = html;
+                    
+                    // Mostrar botón de interpolación
+                    interpolarBtn.style.display = 'block';
+                } else {
+                    resultadosDiv.innerHTML = "ℹ️ No hay suficientes datos para interpolar";
+                }
             }
-        });
-
-        // Efecto Matrix opcional (elimínalo si no te gusta)
-        const canvas = document.getElementById('matrix');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        
-        const chars = "01";
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = Array(Math.floor(columns)).fill(1);
-        
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#0f0';
-            ctx.font = fontSize + 'px monospace';
-            
-            drops.forEach((drop, i) => {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drop * fontSize);
-                drops[i] = (drop * fontSize > canvas.height && Math.random() > 0.975) ? 0 : drop + 1;
-            });
         }
         
-        setInterval(drawMatrix, 33);
+        function interpolar() {
+            if (!inferior || !superior) return;
+            
+            const interpolacionDiv = document.getElementById('interpolacion');
+            interpolacionDiv.style.display = 'block';
+            
+            // Función de interpolación lineal
+            function interpolar(valor, x0, x1, y0, y1) {
+                return y0 + (valor - x0) * (y1 - y0) / (x1 - x0);
+            }
+            
+            // Calcular valores interpolados
+            let resultado = {};
+            for (const key in inferior) {
+                if (key === columnaActual) {
+                    resultado[key] = valorActual;
+                } else {
+                    resultado[key] = interpolar(
+                        valorActual,
+                        inferior[columnaActual],
+                        superior[columnaActual],
+                        inferior[key],
+                        superior[key]
+                    );
+                }
+            }
+            
+            // Mostrar resultados
+            let html = "<strong>🎯 Resultado interpolado:</strong><br><br>";
+            html += "<table style='width:100%; border-collapse: collapse;'>";
+            
+            // Cabeceras
+            html += "<tr>";
+            for (const key in resultado) {
+                html += `<th style='text-align:left; padding:5px; border-bottom:1px solid #444;'>${key}</th>`;
+            }
+            html += "</tr>";
+            
+            // Datos
+            html += "<tr style='color:#4fc3f7'>";
+            for (const key in resultado) {
+                // Formatear números (eliminar decimales innecesarios)
+                let valor = resultado[key];
+                if (Number.isInteger(valor)) {
+                    valor = valor.toFixed(0);
+                } else {
+                    valor = parseFloat(valor.toFixed(5));
+                }
+                html += `<td style='padding:5px;'>${valor}</td>`;
+            }
+            html += "</tr>";
+            
+            html += "</table>";
+            interpolacionDiv.innerHTML = html;
+        }
     </script>
 </body>
 </html>
+
+
+
 
 
 
