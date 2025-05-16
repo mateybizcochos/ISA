@@ -1,11 +1,10 @@
-<h1>BUENASSS<h1>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador Atmosférico</title>
-        <style>
+    <style>
         body {
             background-color: #121212;
             color: #ffffff;
@@ -31,7 +30,6 @@
             color: #4fc3f7;
             text-align: center;
             margin-bottom: 30px;
-		font-size: clamp(20px, 3vw, 28px); /* Mínimo 20px, máximo 28px, adaptable */
         }
         
         .search-box {
@@ -84,10 +82,8 @@
     </style>
 </head>
 <body>
-             
-           
     <div class="container">
-        <h1>⛅⛈️🌨️Mi atmosfera estándar☀️🌤️🌦️</h1>
+        <h1>🌍 Buscador Atmosférico</h1>
         
         <div class="search-box">
             <select id="columna">
@@ -115,13 +111,13 @@
     </div>
     
     <div class="reference">
-        Aplicación online para cálculos de atmosfera estándar | GitHub.io
+        Aplicación offline para cálculos atmosféricos | GitHub.io
     </div>
 
     <script>
         // Base de datos completa
         const datos = [
-             { Altura:	0	, Temperatura:	288	, "Velocidad del sonido":	340.17	, "Presión relativa":	1	, "Densidad relativa":	1	, Presión:	101325	, Densidad:	1.23	},
+            { Altura:	0	, Temperatura:	288	, "Velocidad del sonido":	340.17	, "Presión relativa":	1	, "Densidad relativa":	1	, Presión:	101325	, Densidad:	1.23	},
  { Altura:	500	, Temperatura:	284.75	, "Velocidad del sonido":	338.25	, "Presión relativa":	0.942159	, "Densidad relativa":	0.952912	, Presión:	95464.2	, Densidad:	1.17	},
  { Altura:	1000	, Temperatura:	281.5	, "Velocidad del sonido":	336.31	, "Presión relativa":	0.887056	, "Densidad relativa":	0.907539	, Presión:	89880.9	, Densidad:	1.11	},
  { Altura:	1500	, Temperatura:	278.25	, "Velocidad del sonido":	334.37	, "Presión relativa":	0.834592	, "Densidad relativa":	0.863836	, Presión:	84565	, Densidad:	1.06	},
@@ -223,7 +219,6 @@
  { Altura:	88000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000002	, "Densidad relativa":	0.000003	, Presión:	0.17708	, Densidad:	0.00000342	},
  { Altura:	89000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.14658	, Densidad:	0.00000283	},
  { Altura:	90000	, Temperatura:	180.5	, "Velocidad del sonido":	269.3	, "Presión relativa":	0.000001	, "Densidad relativa":	0.000002	, Presión:	0.12134	, Densidad:	0.00000234	},
-
         ];
         
         // Variables para interpolación
