@@ -6,82 +6,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buscador Atmosférico</title>
-    <style>
-        body {
-            background-color: #121212;
-            color: #ffffff;
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 800px;
-            width: 100%;
-            background-color: #1e1e1e;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-        
-        h1 {
-            color: #4fc3f7;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .search-box {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        input, select {
-            padding: 12px;
-            border-radius: 5px;
-            border: 1px solid #333;
-            background-color: #2d2d2d;
-            color: white;
-            font-size: 16px;
-        }
-        
-        button {
-            background-color: #4fc3f7;
-            color: #121212;
-            border: none;
-            padding: 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 16px;
-            transition: background-color 0.3s;
-        }
-        
-        button:hover {
-            background-color: #3fb0e6;
-        }
-        
-        .results {
-            margin-top: 20px;
-            background-color: #252525;
-            border-radius: 5px;
-            padding: 15px;
-            white-space: pre-wrap;
-            font-family: monospace;
-        }
-        
-        .reference {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-        }
-    </style>
+<style>
+    body {
+        background-color: #121212;
+        color: #ffffff;
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        opacity: 0;
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+    
+    .container {
+        max-width: 800px;
+        width: 100%;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        transform: translateY(20px);
+        animation: slideUp 0.4s ease-out 0.2s forwards;
+    }
+    
+    h1 {
+        color: #4fc3f7;
+        text-align: center;
+        margin-bottom: 30px;
+        animation: pulse 2s infinite alternate;
+    }
+    
+    input, select {
+        padding: 12px;
+        border-radius: 5px;
+        border: 1px solid #333;
+        background-color: #2d2d2d;
+        color: white;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    input:focus, select:focus {
+        outline: none;
+        border-color: #4fc3f7;
+        box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.3);
+        transform: scale(1.02);
+    }
+    
+    button {
+        background-color: #4fc3f7;
+        color: #121212;
+        border: none;
+        padding: 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    button:hover {
+        background-color: #3fb0e6;
+        transform: translateY(-2px);
+    }
+    
+    .results {
+        margin-top: 20px;
+        background-color: #252525;
+        border-radius: 5px;
+        padding: 15px;
+        white-space: pre-wrap;
+        font-family: monospace;
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Keyframes para animaciones */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideUp {
+        from { transform: translateY(20px); }
+        to { transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+        from { text-shadow: 0 0 5px rgba(79, 195, 247, 0.5); }
+        to { text-shadow: 0 0 15px rgba(79, 195, 247, 0.8); }
+    }
+</style>
 </head>
 <body>
     <div class="container">
