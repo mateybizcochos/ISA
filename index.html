@@ -23,7 +23,7 @@
             width: 100%;
             background-color: #1e1e1e;
             border-radius: 10px;
-            padding: 20px;
+            padding: 30px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         
@@ -31,6 +31,7 @@
             color: #4fc3f7;
             text-align: center;
             margin-bottom: 10px;
+            font-size: clamp(20px, 3vw, 28px); /* Mínimo 20px, máximo 28px, adaptable */
         }
         
         .search-box {
@@ -372,16 +373,28 @@
             html += "</table>";
             interpolacionDiv.innerHTML = html;
         }
+ </script>
 
-                  // 1. Definir la función primero (importante)
-                  function realizarBusqueda() {
-                console.log("Buscando...");
-                  }
-    
-                      // 2. Luego el listener (aquí o en otro script)
-                          document.getElementById("valor").addEventListener("keypress", (e) => {
-                            if (e.key === "Enter") realizarBusqueda();
-                              });
+ 
+ <script>
+    // Función de búsqueda (la misma que usas para el botón)
+    function realizarBusqueda() {
+        const valor = document.getElementById('valor').value;
+        console.log("Buscando:", valor); // Prueba que funcione
+        // ... aquí tu lógica de búsqueda ...
+    }
+
+    // Manejador del botón
+    document.getElementById('botonBuscar').addEventListener('click', realizarBusqueda);
+
+    // Manejador del Enter en el input
+    document.getElementById('valor').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            realizarBusqueda(); // Llama directamente a la función
+            // O también puedes usar: document.getElementById('botonBuscar').click();
+        }
+    });
 </script>
 </body>
 </html>
